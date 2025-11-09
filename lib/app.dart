@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'routes/app_router.dart';
+
 class HooplyApp extends ConsumerWidget {
   const HooplyApp({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return MaterialApp(
+    final router = ref.watch(routerProvider);
+
+    return MaterialApp.router(
       title: 'Hooply',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
@@ -15,10 +19,7 @@ class HooplyApp extends ConsumerWidget {
           brightness: Brightness.dark,
         ),
       ),
-      home: Scaffold(
-        appBar: AppBar(centerTitle: true, title: Text('Hooply')),
-        body: Center(child: Text('Welcome to Hooply!')),
-      ),
+      routerConfig: router,
     );
   }
 }
