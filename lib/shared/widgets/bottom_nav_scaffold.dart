@@ -3,9 +3,9 @@ import 'package:go_router/go_router.dart';
 import '../../routes/route_names.dart';
 
 class BottomNavScaffold extends StatelessWidget {
-  final Widget body;
   final int currentIndex;
   final PreferredSizeWidget? appBar;
+  final Widget body;
 
   const BottomNavScaffold({
     super.key,
