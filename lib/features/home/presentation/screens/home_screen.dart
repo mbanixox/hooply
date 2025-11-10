@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:hooply/routes/route_names.dart';
 import 'package:hooply/shared/widgets/bottom_nav_scaffold.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -93,28 +95,32 @@ class HomeScreen extends StatelessWidget {
                     title: "Teams",
                     subtitle: "Manage teams",
                     color: Colors.blue,
-                    onTap: () {},
+                    onTap: () => context.go(RouteNames.teamList),
                   ),
                   _QuickActionCard(
                     icon: Icons.history,
                     title: "History",
                     subtitle: "Past games",
                     color: Colors.blue,
-                    onTap: () {},
+                    onTap: () => context.go(RouteNames.history),
                   ),
                   _QuickActionCard(
                     icon: Icons.bar_chart,
                     title: "Stats",
                     subtitle: "View analytics",
                     color: Colors.blue,
-                    onTap: () {},
+                    onTap: () {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text("Stats - Coming Soon!")),
+                      );
+                    },
                   ),
                   _QuickActionCard(
                     icon: Icons.settings,
                     title: "Settings",
                     subtitle: "App settings",
                     color: Colors.blue,
-                    onTap: () {},
+                    onTap: () => context.go(RouteNames.settings),
                   ),
                 ],
               ),
