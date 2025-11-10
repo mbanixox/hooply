@@ -30,7 +30,7 @@ class AppTheme {
     scaffoldBackgroundColor: lightGray,
     // App Bar
     appBarTheme: AppBarTheme(
-      backgroundColor: darkNavy,
+      backgroundColor: const Color(0xFF2C2C2C),
       foregroundColor: white,
       elevation: 0,
       centerTitle: true,
@@ -173,10 +173,10 @@ class AppTheme {
       onSecondary: white,
       onSurface: white,
     ),
-    scaffoldBackgroundColor: darkNavy,
+    scaffoldBackgroundColor: const Color(0xFF121212),
     // App Bar
     appBarTheme: AppBarTheme(
-      backgroundColor: const Color(0xFF0D0F1A),
+      backgroundColor: const Color(0xFF1E1E1E),
       foregroundColor: white,
       elevation: 0,
       centerTitle: true,
