@@ -1,11 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hooply/core/theme/theme_provider.dart' as theme_provider;
 import 'package:hooply/shared/widgets/bottom_nav_scaffold.dart';
 
-class SettingsScreen extends StatelessWidget {
+class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final themeModeAsync = ref.watch(theme_provider.themeModeProvider);
+    final isDarkMode = themeModeAsync.when(
+      data: (mode) => mode == ThemeMode.dark,
+      loading: () => false,
+      error: (_, __) => false,
+    );
+
     return BottomNavScaffold(
       currentIndex: 3,
       body: SafeArea(
@@ -41,9 +50,16 @@ class SettingsScreen extends StatelessWidget {
               items: [
                 _SettingsItem(
                   icon: Icons.dark_mode,
-                  title: "Dark Mode",
-                  subtitle: "System Default",
-                  trailing: Switch(value: false, onChanged: (value) {}),
+                  title: "Theme",
+                  subtitle: isDarkMode ? "Dark Mode" : "Light Mode",
+                  trailing: Switch(
+                    value: isDarkMode,
+                    onChanged: (value) async {
+                      await ref
+                          .read(theme_provider.themeModeProvider.notifier)
+                          .toggleTheme();
+                    },
+                  ),
                   onTap: () {},
                 ),
                 _SettingsItem(
