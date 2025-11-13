@@ -1,5 +1,5 @@
 name: hooply
-description: "A new Flutter project."
+description: "An app that tracks live basketball game statistics for players and teams"
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -39,6 +39,11 @@ dependencies:
   google_fonts: ^6.3.2
   shared_preferences: ^2.5.3
   riverpod_annotation: ^3.0.3
+  drift: ^2.29.0
+  drift_flutter: ^0.2.7
+  path_provider: ^2.1.5
+  path: ^1.9.1
+  sqlite3_flutter_libs: ^0.5.40
 
 dev_dependencies:
   flutter_test:
@@ -54,6 +59,7 @@ dev_dependencies:
   riverpod_lint: ^3.0.3
   build_runner: ^2.7.1
   riverpod_generator: ^3.0.3
+  drift_dev: ^2.29.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
