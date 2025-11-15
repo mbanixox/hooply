@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:hooply/features/home/presentation/screens/history_screen.dart';
 import 'package:hooply/features/home/presentation/screens/home_screen.dart';
 import 'package:hooply/features/home/presentation/screens/settings_screen.dart';
+import 'package:hooply/features/team/presentation/screens/team_detail_screen.dart';
 import 'package:hooply/features/team/presentation/screens/team_list_screen.dart';
 import 'package:hooply/routes/route_names.dart';
 
@@ -21,6 +22,14 @@ final routerProvider = Provider<GoRouter>((ref) {
         name: RouteNames.teamList,
         pageBuilder: (context, state) =>
             NoTransitionPage(child: const TeamListScreen()),
+      ),
+      GoRoute(
+        path: '/teams/:id',
+        name: RouteNames.teamDetails,
+        pageBuilder: (context, state) {
+          final teamId = int.parse(state.pathParameters['id']!);
+          return NoTransitionPage(child: TeamDetailScreen(teamId: teamId));
+        },
       ),
       GoRoute(
         path: RouteNames.history,
