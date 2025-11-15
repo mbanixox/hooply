@@ -9,11 +9,11 @@ final teamsProvider = StreamProvider<List<Team>>((ref) {
 });
 
 // Provider to get teams with player counts
-final teamsWithPlayerCountProvider = FutureProvider<List<TeamWithPlayerCount>>((
+final teamsWithPlayerCountProvider = StreamProvider<List<TeamWithPlayerCount>>((
   ref,
 ) {
   final repository = ref.watch(teamRepositoryProvider);
-  return repository.getTeamsWithPlayerCount();
+  return repository.watchTeamsWithPlayerCount();
 });
 
 // Provider family to get a specific team by ID

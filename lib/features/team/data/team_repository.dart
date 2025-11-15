@@ -52,33 +52,33 @@ class TeamRepository {
     return (_db.delete(_db.teams)..where((t) => t.id.equals(id))).go();
   }
 
-  // Get team with player count
-  Future<List<TeamWithPlayerCount>> getTeamsWithPlayerCount() async {
+  // Watch teams with player count (stream - real-time updates)
+  Stream<List<TeamWithPlayerCount>> watchTeamsWithPlayerCount() {
     final query = _db.select(_db.teams).join([
       leftOuterJoin(_db.players, _db.players.teamId.equalsExp(_db.teams.id)),
     ]);
 
-    final results = await query.get();
+    return query.watch().map((results) {
+      final teamMap = <int, TeamWithPlayerCount>{};
 
-    final teamMap = <int, TeamWithPlayerCount>{};
+      for (final row in results) {
+        final team = row.readTable(_db.teams);
+        final player = row.readTableOrNull(_db.players);
 
-    for (final row in results) {
-      final team = row.readTable(_db.teams);
-      final player = row.readTableOrNull(_db.players);
+        if (!teamMap.containsKey(team.id)) {
+          teamMap[team.id] = TeamWithPlayerCount(team: team, playerCount: 0);
+        }
 
-      if (!teamMap.containsKey(team.id)) {
-        teamMap[team.id] = TeamWithPlayerCount(team: team, playerCount: 0);
+        if (player != null) {
+          teamMap[team.id] = TeamWithPlayerCount(
+            team: team,
+            playerCount: teamMap[team.id]!.playerCount + 1,
+          );
+        }
       }
 
-      if (player != null) {
-        teamMap[team.id] = TeamWithPlayerCount(
-          team: team,
-          playerCount: teamMap[team.id]!.playerCount + 1,
-        );
-      }
-    }
-
-    return teamMap.values.toList();
+      return teamMap.values.toList();
+    });
   }
 }
 
