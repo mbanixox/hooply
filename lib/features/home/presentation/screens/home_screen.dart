@@ -32,10 +32,7 @@ class HomeScreen extends StatelessWidget {
               Card(
                 child: InkWell(
                   onTap: () {
-                    // TODO: Navigate to team select
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Navigate to Team Select')),
-                    );
+                    context.push(RouteNames.gameSetup);
                   },
                   borderRadius: BorderRadius.circular(16.0),
                   child: Padding(

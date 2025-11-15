@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hooply/features/game/presentation/screens/game_setup_screen.dart';
 import 'package:hooply/features/home/presentation/screens/history_screen.dart';
 import 'package:hooply/features/home/presentation/screens/home_screen.dart';
 import 'package:hooply/features/home/presentation/screens/settings_screen.dart';
@@ -24,12 +25,17 @@ final routerProvider = Provider<GoRouter>((ref) {
             NoTransitionPage(child: const TeamListScreen()),
       ),
       GoRoute(
-        path: '/teams/:id',
+        path: RouteNames.teamDetails,
         name: RouteNames.teamDetails,
         pageBuilder: (context, state) {
           final teamId = int.parse(state.pathParameters['id']!);
           return NoTransitionPage(child: TeamDetailScreen(teamId: teamId));
         },
+      ),
+      GoRoute(
+        path: RouteNames.gameSetup,
+        name: RouteNames.gameSetup,
+        builder: (context, state) => const GameSetupScreen(),
       ),
       GoRoute(
         path: RouteNames.history,

@@ -11,7 +11,7 @@ class RouteNames {
   static const String addPlayer = '/teams/:id/add-player';
 
   // Game Routes
-  static const String teamSelect = '/game/setup';
+  static const String gameSetup = '/game/setup';
   static const String lineupSelect = '/game/lineup';
   static const String gameLive = '/game/live';
   static const String gameSummary = '/game/summary';

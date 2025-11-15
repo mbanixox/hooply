@@ -21,10 +21,7 @@ class BottomNavScaffold extends StatelessWidget {
       body: body,
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
-          // TODO: Navigate to game setup
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Start Game - Coming Soon!')),
-          );
+          context.push(RouteNames.gameSetup);
         },
         icon: const Icon(Icons.play_arrow),
         label: const Text('New Game'),
