@@ -14,7 +14,7 @@ class RouteNames {
   static const String gameSetup = '/game/setup';
   static const String lineupSelect = '/game/lineup';
   static const String gameLive = '/game/live/:id';
-  static const String gameSummary = '/game/summary';
+  static const String gameSummary = '/game/summary/:id';
 
   // Stats Routes
   static const String playerStats = '/stats/player/:id';

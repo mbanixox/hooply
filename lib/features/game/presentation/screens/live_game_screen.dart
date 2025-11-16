@@ -7,6 +7,7 @@ import 'package:hooply/features/game/presentation/providers/game_provider.dart';
 import 'package:hooply/features/game/widgets/player_on_court_card.dart';
 import 'package:hooply/features/game/widgets/substitution_dialog.dart';
 import 'package:hooply/features/player/presentation/providers/player_provider.dart';
+import 'package:hooply/routes/route_names.dart';
 
 class LiveGameScreen extends ConsumerStatefulWidget {
   final int gameId;
@@ -52,7 +53,7 @@ class _LiveGameScreenState extends ConsumerState<LiveGameScreen> {
         );
 
         if (confirm == true && context.mounted) {
-          context.go('/');
+          context.go(RouteNames.home);
         }
       },
       child: Scaffold(
@@ -479,10 +480,10 @@ class _LiveGameScreenState extends ConsumerState<LiveGameScreen> {
     if (confirm == true && mounted) {
       await ref.read(gameControllerProvider.notifier).endGame(gameId);
       if (mounted) {
-        context.go('/');
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('Game ended and saved!')));
+        context.goNamed(
+          RouteNames.gameSummary,
+          pathParameters: {'id': gameId.toString()},
+        );
       }
     }
   }
