@@ -13,7 +13,7 @@ class RouteNames {
   // Game Routes
   static const String gameSetup = '/game/setup';
   static const String lineupSelect = '/game/lineup';
-  static const String gameLive = '/game/live';
+  static const String gameLive = '/game/live/:id';
   static const String gameSummary = '/game/summary';
 
   // Stats Routes

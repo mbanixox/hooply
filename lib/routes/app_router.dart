@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooply/features/game/presentation/screens/game_setup_screen.dart';
+import 'package:hooply/features/game/presentation/screens/live_game_screen.dart';
 import 'package:hooply/features/home/presentation/screens/history_screen.dart';
 import 'package:hooply/features/home/presentation/screens/home_screen.dart';
 import 'package:hooply/features/home/presentation/screens/settings_screen.dart';
@@ -36,6 +37,14 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: RouteNames.gameSetup,
         name: RouteNames.gameSetup,
         builder: (context, state) => const GameSetupScreen(),
+      ),
+      GoRoute(
+        path: RouteNames.gameLive,
+        name: RouteNames.gameLive,
+        builder: (context, state) {
+          final id = int.parse(state.pathParameters['id']!);
+          return LiveGameScreen(gameId: id);
+        },
       ),
       GoRoute(
         path: RouteNames.history,

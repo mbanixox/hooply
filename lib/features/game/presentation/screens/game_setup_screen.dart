@@ -138,7 +138,10 @@ class _GameSetupScreenState extends ConsumerState<GameSetupScreen> {
                   ),
                   const SizedBox(height: 24),
                   ElevatedButton(
-                    onPressed: () => context.go('/teams/${_selectedTeam!.id}'),
+                    onPressed: () => context.goNamed(
+                      RouteNames.teamDetails,
+                      pathParameters: {'id': _selectedTeam!.id.toString()},
+                    ),
                     child: const Text('Add Players'),
                   ),
                 ],
@@ -284,7 +287,10 @@ class _GameSetupScreenState extends ConsumerState<GameSetupScreen> {
           );
 
       if (mounted) {
-        context.go('/game/live/$gameId');
+        context.goNamed(
+          RouteNames.gameLive,
+          pathParameters: {'id': gameId.toString()},
+        );
       }
     } catch (e) {
       if (mounted) {
