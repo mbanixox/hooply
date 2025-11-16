@@ -1,13 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hooply/core/database/app_database.dart';
+import 'package:hooply/features/game/data/game_repository.dart';
+import 'package:hooply/features/team/presentation/providers/team_provider.dart';
 import 'package:hooply/routes/route_names.dart';
 import 'package:hooply/shared/widgets/bottom_nav_scaffold.dart';
+import 'package:intl/intl.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final gamesStream = ref.watch(gameRepositoryProvider).watchAllGames();
+
     return BottomNavScaffold(
       currentIndex: 0,
       body: SafeArea(
@@ -124,15 +131,59 @@ class HomeScreen extends StatelessWidget {
 
               const SizedBox(height: 24),
 
-              Text(
-                "Recent Games",
-                style: Theme.of(context).textTheme.titleLarge,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Recent Games',
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                  TextButton(
+                    onPressed: () => context.go(RouteNames.history),
+                    child: const Text('View All'),
+                  ),
+                ],
               ),
               const SizedBox(height: 16),
-              _EmptyState(
-                icon: Icons.sports_basketball,
-                message: "No games played yet",
-                subtitle: "Start tracking your first game!",
+
+              StreamBuilder<List<Game>>(
+                stream: gamesStream,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(
+                      child: Padding(
+                        padding: EdgeInsets.all(32),
+                        child: CircularProgressIndicator(),
+                      ),
+                    );
+                  }
+
+                  if (snapshot.hasError) {
+                    return Center(
+                      child: Text('Error loading games: ${snapshot.error}'),
+                    );
+                  }
+
+                  final games = snapshot.data ?? [];
+                  final completedGames = games
+                      .where((g) => g.status == 'completed')
+                      .take(3)
+                      .toList();
+
+                  if (completedGames.isEmpty) {
+                    return _EmptyState(
+                      icon: Icons.sports_basketball,
+                      message: 'No games yet',
+                      subtitle: 'Start tracking your first game!',
+                    );
+                  }
+
+                  return Column(
+                    children: completedGames.map((game) {
+                      return _RecentGameCard(game: game);
+                    }).toList(),
+                  );
+                },
               ),
             ],
           ),
@@ -232,6 +283,86 @@ class _EmptyState extends StatelessWidget {
               ).textTheme.bodySmall?.copyWith(color: Colors.grey[500]),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _RecentGameCard extends ConsumerWidget {
+  final Game game;
+
+  const _RecentGameCard({required this.game});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final teamAsync = ref.watch(teamByIdProvider(game.teamId));
+    final dateFormat = DateFormat('MMM d, y');
+    final timeFormat = DateFormat('h:mm a');
+
+    return Card(
+      margin: const EdgeInsets.only(bottom: 12),
+      child: InkWell(
+        onTap: () => context.pushNamed(
+          RouteNames.gameSummary,
+          pathParameters: {'id': game.id.toString()},
+        ),
+        borderRadius: BorderRadius.circular(16),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            children: [
+              // Game Icon
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.secondary.withValues(alpha: 0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  Icons.sports_basketball,
+                  color: Theme.of(context).colorScheme.secondary,
+                  size: 24,
+                ),
+              ),
+              const SizedBox(width: 16),
+
+              // Game Info
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    teamAsync.when(
+                      data: (team) => Text(
+                        team?.name ?? 'Unknown Team',
+                        style: Theme.of(context).textTheme.titleMedium
+                            ?.copyWith(fontWeight: FontWeight.bold),
+                      ),
+                      loading: () => const Text('Loading...'),
+                      error: (_, __) => const Text('Error'),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'vs ${game.opponentName}',
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      '${dateFormat.format(game.gameDate)} • ${timeFormat.format(game.gameDate)}',
+                      style: Theme.of(
+                        context,
+                      ).textTheme.bodySmall?.copyWith(color: Colors.grey[600]),
+                    ),
+                  ],
+                ),
+              ),
+
+              // Arrow
+              Icon(Icons.chevron_right, color: Colors.grey[400]),
+            ],
+          ),
         ),
       ),
     );
