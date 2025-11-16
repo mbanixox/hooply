@@ -18,6 +18,7 @@ class LiveGameScreen extends ConsumerStatefulWidget {
 
 class _LiveGameScreenState extends ConsumerState<LiveGameScreen> {
   int? _selectedPlayerId;
+  bool _isStatPanelExpanded = false;
 
   @override
   Widget build(BuildContext context) {
@@ -71,7 +72,15 @@ class _LiveGameScreenState extends ConsumerState<LiveGameScreen> {
                       .where((s) => !s.isOnCourt)
                       .toList();
 
-                  return Column(
+                  return GestureDetector(
+                    onTap: () {
+                      if (_isStatPanelExpanded) {
+                        setState(() {
+                          _isStatPanelExpanded = false;
+                        });
+                      }
+                    },
+                    child: Column(
                     children: [
                       // Game Header
                       _buildGameHeader(game),
@@ -92,7 +101,9 @@ class _LiveGameScreenState extends ConsumerState<LiveGameScreen> {
                                     style: Theme.of(context)
                                         .textTheme
                                         .titleMedium
-                                        ?.copyWith(fontWeight: FontWeight.bold),
+                                          ?.copyWith(
+                                            fontWeight: FontWeight.bold,
+                                          ),
                                   ),
                                   IconButton(
                                     icon: const Icon(Icons.swap_horiz),
@@ -125,6 +136,7 @@ class _LiveGameScreenState extends ConsumerState<LiveGameScreen> {
                                     onTap: () {
                                       setState(() {
                                         _selectedPlayerId = stat.playerId;
+                                          _isStatPanelExpanded = true;
                                       });
                                     },
                                   );
@@ -136,8 +148,10 @@ class _LiveGameScreenState extends ConsumerState<LiveGameScreen> {
                       ),
 
                       // Stat Buttons (if player selected)
-                      if (_selectedPlayerId != null) _buildStatButtons(game),
+                        if (_selectedPlayerId != null && _isStatPanelExpanded)
+                          _buildStatButtons(game),
                     ],
+                    ),
                   );
                 },
                 loading: () => const Center(child: CircularProgressIndicator()),
