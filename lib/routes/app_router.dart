@@ -3,7 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:hooply/features/game/presentation/screens/game_setup_screen.dart';
 import 'package:hooply/features/game/presentation/screens/game_summary_screen.dart';
 import 'package:hooply/features/game/presentation/screens/live_game_screen.dart';
-import 'package:hooply/features/home/presentation/screens/history_screen.dart';
+import 'package:hooply/features/history/presentation/screens/history_screen.dart';
 import 'package:hooply/features/home/presentation/screens/home_screen.dart';
 import 'package:hooply/features/home/presentation/screens/settings_screen.dart';
 import 'package:hooply/features/team/presentation/screens/team_detail_screen.dart';
