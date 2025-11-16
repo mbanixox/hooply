@@ -6,6 +6,7 @@ import 'package:hooply/features/game/presentation/providers/game_controller_prov
 import 'package:hooply/features/game/presentation/providers/game_provider.dart';
 import 'package:hooply/features/game/widgets/player_on_court_card.dart';
 import 'package:hooply/features/game/widgets/substitution_dialog.dart';
+import 'package:hooply/features/player/presentation/providers/player_provider.dart';
 
 class LiveGameScreen extends ConsumerStatefulWidget {
   final int gameId;
@@ -81,76 +82,76 @@ class _LiveGameScreenState extends ConsumerState<LiveGameScreen> {
                       }
                     },
                     child: Column(
-                    children: [
-                      // Game Header
-                      _buildGameHeader(game),
+                      children: [
+                        // Game Header
+                        _buildGameHeader(game),
 
-                      // Players on Court
-                      Expanded(
-                        flex: 3,
-                        child: Column(
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.all(12),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    'On Court (${onCourtStats.length})',
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .titleMedium
+                        // Players on Court
+                        Expanded(
+                          flex: 3,
+                          child: Column(
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.all(12),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      'On Court (${onCourtStats.length})',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleMedium
                                           ?.copyWith(
                                             fontWeight: FontWeight.bold,
                                           ),
-                                  ),
-                                  IconButton(
-                                    icon: const Icon(Icons.swap_horiz),
-                                    onPressed:
-                                        onCourtStats.isNotEmpty &&
-                                            benchStats.isNotEmpty
-                                        ? () => _showSubstitutionDialog(
-                                            onCourtStats,
-                                            benchStats,
-                                          )
-                                        : null,
-                                    tooltip: 'Substitute',
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Expanded(
-                              child: ListView.builder(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 12,
+                                    ),
+                                    IconButton(
+                                      icon: const Icon(Icons.swap_horiz),
+                                      onPressed:
+                                          onCourtStats.isNotEmpty &&
+                                              benchStats.isNotEmpty
+                                          ? () => _showSubstitutionDialog(
+                                              onCourtStats,
+                                              benchStats,
+                                            )
+                                          : null,
+                                      tooltip: 'Substitute',
+                                    ),
+                                  ],
                                 ),
-                                itemCount: onCourtStats.length,
-                                itemBuilder: (context, index) {
-                                  final stat = onCourtStats[index];
-                                  return PlayerOnCourtCard(
-                                    gameId: widget.gameId,
-                                    stat: stat,
-                                    isSelected:
-                                        _selectedPlayerId == stat.playerId,
-                                    onTap: () {
-                                      setState(() {
-                                        _selectedPlayerId = stat.playerId;
-                                          _isStatPanelExpanded = true;
-                                      });
-                                    },
-                                  );
-                                },
                               ),
-                            ),
-                          ],
+                              Expanded(
+                                child: ListView.builder(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                  ),
+                                  itemCount: onCourtStats.length,
+                                  itemBuilder: (context, index) {
+                                    final stat = onCourtStats[index];
+                                    return PlayerOnCourtCard(
+                                      gameId: widget.gameId,
+                                      stat: stat,
+                                      isSelected:
+                                          _selectedPlayerId == stat.playerId,
+                                      onTap: () {
+                                        setState(() {
+                                          _selectedPlayerId = stat.playerId;
+                                          _isStatPanelExpanded = true;
+                                        });
+                                      },
+                                    );
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
 
-                      // Stat Buttons (if player selected)
+                        // Stat Buttons (if player selected)
                         if (_selectedPlayerId != null && _isStatPanelExpanded)
                           _buildStatButtons(game),
-                    ],
+                      ],
                     ),
                   );
                 },
@@ -281,8 +282,12 @@ class _LiveGameScreenState extends ConsumerState<LiveGameScreen> {
   }
 
   Widget _buildStatButtons(Game game) {
+    final selectedPlayerAsync = _selectedPlayerId != null
+        ? ref.watch(playerProvider(_selectedPlayerId!))
+        : null;
+
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
         boxShadow: [
@@ -296,7 +301,68 @@ class _LiveGameScreenState extends ConsumerState<LiveGameScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Record Stat', style: Theme.of(context).textTheme.titleSmall),
+          Row(
+            children: [
+              Text(
+                'Record Stat',
+                style: Theme.of(context).textTheme.titleSmall,
+              ),
+              const SizedBox(width: 8),
+              if (selectedPlayerAsync != null)
+                selectedPlayerAsync.when(
+                  data: (player) => Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 6,
+                      vertical: 2,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.primary.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: Theme.of(context).colorScheme.primary,
+                        width: 1,
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        CircleAvatar(
+                          radius: 10,
+                          backgroundColor: Theme.of(
+                            context,
+                          ).colorScheme.primary,
+                          child: Text(
+                            '${player?.jerseyNumber ?? ""}',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 6),
+                        Text(
+                          player?.name ?? 'Unknown',
+                          style: Theme.of(context).textTheme.bodySmall
+                              ?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: Theme.of(context).colorScheme.primary,
+                              ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  loading: () => const SizedBox(
+                    height: 20,
+                    width: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  ),
+                  error: (_, __) => const SizedBox(),
+                ),
+            ],
+          ),
           const SizedBox(height: 8),
           Wrap(
             spacing: 8,
