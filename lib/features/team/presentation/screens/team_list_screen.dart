@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hooply/features/team/presentation/providers/team_provider.dart';
 import 'package:hooply/features/team/presentation/widgets/create_team_dialog.dart';
 import 'package:hooply/features/team/presentation/widgets/team_card.dart';
+import 'package:hooply/routes/route_names.dart';
 import 'package:hooply/shared/widgets/bottom_nav_scaffold.dart';
 
 class TeamListScreen extends ConsumerWidget {
@@ -12,55 +14,67 @@ class TeamListScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final teamsAsync = ref.watch(teamsWithPlayerCountProvider);
 
-    return BottomNavScaffold(
-      currentIndex: 1,
-      appBar: AppBar(
-        title: const Text("Teams"),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.add),
-            onPressed: () {
-              showDialog(
-                context: context,
-                builder: (context) => const CreateTeamDialog(),
-              );
-            },
-          ),
-        ],
-      ),
-      body: SafeArea(
-        child: teamsAsync.when(
-          data: (teams) {
-            if (teams.isEmpty) {
-              return _buildEmptyState(context);
-            }
-
-            return ListView.builder(
-              padding: const EdgeInsets.all(16.0),
-              itemCount: teams.length,
-              itemBuilder: (context, index) {
-                final teamData = teams[index];
-                return TeamCard(
-                  team: teamData.team,
-                  playerCount: teamData.playerCount,
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (bool didPop, dynamic result) async {
+        if (didPop) return;
+        context.go(RouteNames.home);
+      },
+      child: BottomNavScaffold(
+        currentIndex: 1,
+        appBar: AppBar(
+          title: const Text("Teams"),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.add),
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (context) => const CreateTeamDialog(),
                 );
               },
-            );
-          },
-          loading: () => const Center(child: CircularProgressIndicator()),
-          error: (error, stack) => Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Icon(Icons.error_outline, size: 48.0, color: Colors.red),
-                const SizedBox(height: 16.0),
-                Text("Error loading teams: $error"),
-                const SizedBox(height: 16.0),
-                ElevatedButton(
-                  onPressed: () => ref.invalidate(teamsWithPlayerCountProvider),
-                  child: const Text("Retry"),
-                ),
-              ],
+            ),
+          ],
+        ),
+        body: SafeArea(
+          child: teamsAsync.when(
+            data: (teams) {
+              if (teams.isEmpty) {
+                return _buildEmptyState(context);
+              }
+
+              return ListView.builder(
+                padding: const EdgeInsets.all(16.0),
+                itemCount: teams.length,
+                itemBuilder: (context, index) {
+                  final teamData = teams[index];
+                  return TeamCard(
+                    team: teamData.team,
+                    playerCount: teamData.playerCount,
+                  );
+                },
+              );
+            },
+            loading: () => const Center(child: CircularProgressIndicator()),
+            error: (error, stack) => Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(
+                    Icons.error_outline,
+                    size: 48.0,
+                    color: Colors.red,
+                  ),
+                  const SizedBox(height: 16.0),
+                  Text("Error loading teams: $error"),
+                  const SizedBox(height: 16.0),
+                  ElevatedButton(
+                    onPressed: () =>
+                        ref.invalidate(teamsWithPlayerCountProvider),
+                    child: const Text("Retry"),
+                  ),
+                ],
+              ),
             ),
           ),
         ),

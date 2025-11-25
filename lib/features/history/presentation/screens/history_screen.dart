@@ -15,38 +15,45 @@ class HistoryScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final gamesStream = ref.watch(gameRepositoryProvider).watchAllGames();
 
-    return BottomNavScaffold(
-      currentIndex: 2,
-      appBar: AppBar(title: const Text('Game History')),
-      body: SafeArea(
-        child: StreamBuilder<List<Game>>(
-          stream: gamesStream,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
-            }
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (bool didPop, dynamic result) async {
+        if (didPop) return;
+        context.go(RouteNames.home);
+      },
+      child: BottomNavScaffold(
+        currentIndex: 2,
+        appBar: AppBar(title: const Text('Game History')),
+        body: SafeArea(
+          child: StreamBuilder<List<Game>>(
+            stream: gamesStream,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              }
 
-            if (snapshot.hasError) {
-              return Center(child: Text('Error: ${snapshot.error}'));
-            }
+              if (snapshot.hasError) {
+                return Center(child: Text('Error: ${snapshot.error}'));
+              }
 
-            final games = snapshot.data ?? [];
-            final completedGames = games
-                .where((g) => g.status == 'completed')
-                .toList();
+              final games = snapshot.data ?? [];
+              final completedGames = games
+                  .where((g) => g.status == 'completed')
+                  .toList();
 
-            if (completedGames.isEmpty) {
-              return _buildEmptyState(context);
-            }
+              if (completedGames.isEmpty) {
+                return _buildEmptyState(context);
+              }
 
-            return ListView.builder(
-              padding: const EdgeInsets.all(16),
-              itemCount: completedGames.length,
-              itemBuilder: (context, index) {
-                return _GameHistoryCard(game: completedGames[index]);
-              },
-            );
-          },
+              return ListView.builder(
+                padding: const EdgeInsets.all(16),
+                itemCount: completedGames.length,
+                itemBuilder: (context, index) {
+                  return _GameHistoryCard(game: completedGames[index]);
+                },
+              );
+            },
+          ),
         ),
       ),
     );
