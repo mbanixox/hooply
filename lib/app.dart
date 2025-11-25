@@ -15,8 +15,8 @@ class HooplyApp extends ConsumerWidget {
 
     final themeMode = themeModeAsync.when(
       data: (mode) => mode,
-      loading: () => ThemeMode.system,
-      error: (_, __) => ThemeMode.system,
+      loading: () => ThemeMode.dark,
+      error: (_, __) => ThemeMode.dark,
     );
 
     return MaterialApp.router(
